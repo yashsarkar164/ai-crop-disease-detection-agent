@@ -12,10 +12,12 @@ from firebase_admin import credentials, firestore
 from datetime import datetime
 import base64
 import io
-from dotenv import load_dotenv  
-from google.cloud import storage 
+# Import load_dotenv ONLY if you use a .env file for local development
+# from dotenv import load_dotenv
+from google.cloud import storage # Import Google Cloud Storage client at the top level
 
-load_dotenv()
+# If you use a .env file locally, uncomment the next line:
+# load_dotenv()
 
 # --- Flask App Setup ---
 app = Flask(__name__, template_folder='templates', static_folder='static')
@@ -31,11 +33,12 @@ CLASS_INDICES_FILENAME = os.path.join(os.getcwd(), 'class_indices.json')
 LOCAL_FIREBASE_KEY_PATH = os.path.join(os.getcwd(), 'serviceAccountKey.json')
 
 # --- GCS Configuration for Model Download ---
+# REPLACE with YOUR ACTUAL GCS BUCKET NAME
 GCS_BUCKET_NAME = "crop-doctor-ml-models-aayush-2025"
 # Name of the model file as it is stored in your GCS bucket
 GCS_MODEL_BLOB_NAME = "crop_diagnosis_best_model.keras"
 
-# --- API Key 
+# --- API Key (Read from environment variable for security) ---
 # This will read from Render's environment variables or your local .env
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
@@ -79,6 +82,7 @@ def download_model_from_gcs():
 # --- Initialize Firebase Admin SDK ---
 def initialize_firebase():
     global db
+    print("Attempting to initialize Firebase...") # Added for debugging
     try:
         # For Render deployment, Firebase credentials should be passed as an environment variable (FIREBASE_CONFIG_JSON)
         firebase_config_json = os.getenv("FIREBASE_CONFIG_JSON")
@@ -96,15 +100,18 @@ def initialize_firebase():
         if not firebase_admin._apps: # Check if app is already initialized to prevent errors
             firebase_admin.initialize_app(cred)
         db = firestore.client()
-        print("Firebase initialized successfully.")
+        print(f"Firebase initialized successfully. db object is: {db}") # Added for debugging
         return True
     except Exception as e:
         print(f"Failed to initialize Firebase: {e}")
+        import traceback # Added for debugging
+        traceback.print_exc() # Added for debugging
         return False
 
 # --- Load Model and Class Indices on startup ---
 def load_resources():
     global model, class_labels
+    print("Attempting to load model and class indices...") # Added for debugging
     try:
         # The model should have been downloaded by the Render build command before this runs.
         if not os.path.exists(MODEL_FILENAME):
@@ -122,7 +129,22 @@ def load_resources():
         return True
     except Exception as e:
         print(f"Failed to load model or class indices: {e}")
+        import traceback # Added for debugging
+        traceback.print_exc() # Added for debugging
         return False
+
+# --- Call initialization functions directly when the module is imported ---
+# These lines will run when Gunicorn imports app.py
+if not initialize_firebase():
+    print("CRITICAL ERROR: Firebase initialization failed during app startup.")
+    # You might want to raise an exception or exit here in a real production app
+    # to prevent the app from running in a broken state.
+    # For now, we'll let it proceed to allow other debugging.
+
+if not load_resources():
+    print("CRITICAL ERROR: Model and class indices loading failed during app startup.")
+    # Similar to Firebase, consider raising an exception or exiting.
+
 
 # --- Gemini Integration ---
 def get_gemini_diagnosis(disease_name, user_context):
@@ -213,6 +235,9 @@ def predict():
             "confidence": float(confidence)
         })
     except Exception as e:
+        print(f"ERROR during prediction: {e}") # Added for debugging
+        import traceback # Added for debugging
+        traceback.print_exc() # Added for debugging
         return jsonify({"error": f"Error during prediction: {e}"}), 500
 
 # --- Get Diagnosis Endpoint ---
@@ -235,7 +260,7 @@ def get_diagnosis():
 @app.route('/history', methods=['GET'])
 def get_history():
     if not db:
-        print("ERROR: Firestore 'db' object is None before history fetch.") # Add this line
+        print("ERROR: Firestore 'db' object is None before history fetch.") # Added for debugging
         return jsonify({"error": "Firestore not initialized."}), 500
 
     try:
@@ -251,9 +276,9 @@ def get_history():
 
         return jsonify({"history": history_data})
     except Exception as e:
-        print(f"ERROR fetching history: {e}") # ADD THIS LINE
-        import traceback # ADD THIS LINE
-        traceback.print_exc() # ADD THIS LINE - this will print the full traceback
+        print(f"ERROR fetching history: {e}") # Added for debugging
+        import traceback # Added for debugging
+        traceback.print_exc() # Added for debugging
         return jsonify({"error": f"Error fetching history: {e}"}), 500
 
 # --- Frontend Routes ---
@@ -267,13 +292,13 @@ def history_page():
 
 @app.route('/user_guide')
 def user_guide():
-    return render_template('user_guide.html')
+    return render_template('user.html') # Corrected from user_guide.html
 
 @app.route('/tools')
 def tools_page():
     return render_template('tools.html')
 
-# --- Main entry point for Flask ---
+# --- Main entry point for Flask (only for local development) ---
 if __name__ == '__main__':
     # For local development, you might call download_model_from_gcs() here
     # if you want it to download every time you run app.py locally.
@@ -291,8 +316,9 @@ if __name__ == '__main__':
     #     # Decide if you want to exit or continue without model
     #     exit(1) # Exit if model download is critical
 
-    if initialize_firebase() and load_resources():
-        print("Starting Flask server...")
-        app.run(debug=True)
-    else:
-        print("Application could not start due to missing resources or Firebase initialization failure.")
+    # These are now called outside this block for Gunicorn compatibility
+    # if initialize_firebase() and load_resources():
+    print("Starting Flask server for local development...")
+    app.run(debug=True)
+    # else:
+    #     print("Application could not start due to missing resources or Firebase initialization failure.")
