@@ -1,7 +1,7 @@
 import os
 import json
 import numpy as np
-import tensorflow as tf # For tf.lite.Interpreter
+import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import google.generativeai as genai
 from flask import Flask, request, jsonify, render_template, send_from_directory
@@ -19,17 +19,17 @@ CORS(app)
 # --- Configuration ---
 IMG_HEIGHT = 128
 IMG_WIDTH = 128
-# Model is now assumed to be directly in the cloned repository
+
+# Model and class indices file paths
 MODEL_FILENAME = 'crop_diagnosis_best_model.tflite'
 CLASS_INDICES_FILENAME = os.path.join(os.getcwd(), 'class_indices.json')
 
-# --- API Key (Read from Render environment variable for security) ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # --- Global variables for model and class labels ---
-model = None # 'model' will now hold the TensorFlow Lite Interpreter object
+model = None 
 class_labels = None
-db = None # Firestore database client
+db = None 
 
 # --- Initialize Firebase Admin SDK (Optimized for Render Environment Variables) ---
 def initialize_firebase():
@@ -61,7 +61,6 @@ def load_resources():
     global model, class_labels
     print("Attempting to load model and class indices...")
     try:
-        # Model is expected to be present from GitHub clone
         if not os.path.exists(MODEL_FILENAME):
             print(f"Error: Model file not found at {MODEL_FILENAME}. Please ensure it's committed to GitHub.")
             return False
@@ -72,7 +71,7 @@ def load_resources():
         # --- Load TFLite model using Interpreter ---
         interpreter = tf.lite.Interpreter(model_path=MODEL_FILENAME)
         interpreter.allocate_tensors()
-        model = interpreter # Assign the interpreter to the global 'model' variable
+        model = interpreter 
 
         with open(CLASS_INDICES_FILENAME, 'r') as f:
             class_indices = json.load(f)
@@ -251,51 +250,31 @@ def user_guide():
 def tools_page():
     return render_template('tools.html')
 
-# --- Main entry point for Flask (only for local development) ---
 if __name__ == '__main__':
-    # This block is for local development only.
-    # It will NOT run when Gunicorn imports app.py on Render.
+    # This block is for local development only, It will NOT run when Gunicorn imports app.py on Render.
     print("Starting Flask server for local development...")
 
-    # For local development, we assume the model is already present locally.
-    # We explicitly DO NOT call download_model_from_gcs() here.
-
-    # Initialize Firebase and load model/class indices here for local debug mode.
-    # For local, you'd typically use serviceAccountKey.json or a local .env for FIREBASE_CONFIG_JSON
-    # This block will still try to load from LOCAL_FIREBASE_KEY_PATH if FIREBASE_CONFIG_JSON is not set.
-    # If you have a separate app.py for local, you can simplify this.
+    # Initialize Firebase and load resources
     if not initialize_firebase():
         print("CRITICAL ERROR: Firebase initialization failed during app startup.")
-        exit(1) # Exit if Firebase is critical
+        exit(1)
 
     if not load_resources():
         print("CRITICAL ERROR: Model and class indices loading failed during app startup.")
-        exit(1) # Exit if model is critical
-
-    # Run the Flask app in debug mode for local development
+        exit(1)
+        
     app.run(debug=True, port=5000)
 
 # --- Initialization for Render deployment (Gunicorn) ---
 # This block will run when Gunicorn imports app.py as a module on Render.
 if os.getenv("RENDER"): # Check if running on Render
     print("Detected Render environment. Performing production initialization...")
-    # Model is now expected to be available directly from the GitHub repository clone.
-    # No GCS download is needed at runtime or during the build step for the model.
 
     if not initialize_firebase():
         print("CRITICAL ERROR: Firebase initialization failed for Render deployment.")
-        # In a real production app, you might want to raise an exception here
-        # raise RuntimeError("Firebase initialization failed.")
 
     if not load_resources():
         print("CRITICAL ERROR: Model and class indices loading failed for Render deployment.")
-        # In a real production app, you might want to raise an exception here
-        # raise RuntimeError("Model loading failed.")
 else:
-    # This 'else' block handles the case where os.getenv("RENDER") is not true,
-    # meaning it's not detected as a Render environment.
-    # For local development, the __main__ block already handles initialization.
-    # So, this 'else' block is effectively redundant if the __main__ block runs,
-    # but it's harmless.
     print("Not running on Render. Local initialization handled by __main__ block.")
 
