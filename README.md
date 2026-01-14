@@ -8,24 +8,86 @@
 
 ## 📖 About the Project
 
-AI Crop Doctor is an AI-powered web application that helps farmers, gardeners, and agricultural experts identify plant diseases from leaf images. By combining **machine learning image analysis** with **context-based follow-up questions**, it delivers accurate diagnoses and practical treatment suggestions.
+**AI Crop Doctor** is an AI-powered web application that helps farmers, gardeners, and agricultural experts **identify plant diseases from leaf images**. By combining **machine learning image analysis** with **context-based follow-up questions**, it delivers **accurate diagnoses** and **practical treatment suggestions**.
 
-**How it works:**
+### How it works
 
-1. **Upload** an image of your plant or leaf (drag-and-drop or click to select)
-2. **Answer** a few simple questions about symptoms and conditions
-3. **Receive** a confidence-based disease diagnosis and recommendations
+1. **Upload** an image of your plant or leaf (drag-and-drop or click to select)  
+2. **Answer** a few simple questions about symptoms and conditions  
+3. **Receive** a confidence-based disease diagnosis and actionable recommendations  
 
-**Key Highlights:**
+### Key Highlights
 
-* 📸 **AI Image Recognition** for plant disease detection
-* 🧭 **Interactive Q\&A** for improved accuracy
-* 📊 **Confidence Scores** for transparency
-* 📱 **Fully Responsive** and mobile-friendly design
-* 🎯 **Actionable Recommendations** to help protect crops
+- 📸 **AI Image Recognition** for plant disease detection  
+- 🧭 **Interactive Q&A** for improved accuracy  
+- 📊 **Confidence Scores** for transparency  
+- 📱 **Fully Responsive** and mobile-friendly design  
+- 🎯 **Actionable Recommendations** to help protect crops  
 
 ---
 
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:22c55e,100:16a34a&height=100&section=footer" alt="Wave Animation" />
-</p>
+## 🗂 Project Structure
+
+ai-crop-disease-detection-agent
+│ app.py
+│ class_indices.json
+│ crop_diagnosis_best_model.tflite
+│ README.md
+│ requirements.txt
+│ .gitattributes
+│ .gitignore
+│
+├───static
+│ ├───css
+│ │ style.css
+│ ├───images
+│ │ apple_black-rot.JPG
+│ │ apple_cedar_rust.JPG
+│ │ apple_healthy.JPG
+│ │ ... (other sample images)
+│ └───js
+│ history.js
+│ main.js
+│ user_guide.js
+│
+└───templates
+history.html
+index.html
+tools.html
+user_guide.html
+
+
+---
+
+## ⚡ Installation & Setup
+
+1. Clone the repository:
+
+git clone https://github.com/your-username/ai-crop-disease-detection-agent.git
+cd ai-crop-disease-detection-agent
+
+2. Install dependencies:
+pip install -r requirements.txt
+
+3. Run the app:
+python app.py
+
+4. Open your browser and go to:
+http://127.0.0.1:5000
+
+
+🤝 Contributing
+
+Contributions are welcome!
+Fork the repository
+Create a new branch (git checkout -b feature-name)
+Make your changes
+Push to your branch (git push origin feature-name)
+Open a Pull Request
+
+📄 License
+
+This project is MIT licensed.
+
+<p align="center"> <img src="https://capsule-render.vercel.app/api?type=waving&color=0:22c55e,100:16a34a&height=100&section=footer" alt="Wave Animation" /> </p> ```
+
