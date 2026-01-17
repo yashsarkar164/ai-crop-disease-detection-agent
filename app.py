@@ -19,6 +19,8 @@ CORS(app)
 # --- Configuration ---
 IMG_HEIGHT = 128
 IMG_WIDTH = 128
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
 # Model and class indices file paths
 MODEL_FILENAME = 'crop_diagnosis_best_model.tflite'
@@ -30,6 +32,9 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 model = None 
 class_labels = None
 db = None 
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # --- Initialize Firebase Admin SDK (Optimized for Render Environment Variables) ---
 def initialize_firebase():
@@ -146,14 +151,27 @@ def predict():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
+    if not allowed_file(file.filename):
+        return jsonify({"error": "Invalid file type. Only JPG, JPEG, and PNG are allowed."}), 400
+
     try:
         img_bytes = file.read()
-        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
-        img_stream = io.BytesIO(img_bytes)
         
-        img = image.load_img(img_stream, target_size=(IMG_HEIGHT, IMG_WIDTH))
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0).astype(np.float32) / 255.0
+        # Validation: File Size
+        if len(img_bytes) > MAX_FILE_SIZE_BYTES:
+            return jsonify({"error": f"File size exceeds the limit of {MAX_FILE_SIZE_BYTES // (1024 * 1024)}MB."}), 400
+
+        # Preprocessing Wrapper: Image Loading & Resizing
+        try:
+            img_stream = io.BytesIO(img_bytes)
+            img = image.load_img(img_stream, target_size=(IMG_HEIGHT, IMG_WIDTH))
+            img_array = image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0).astype(np.float32) / 255.0
+        except Exception as e:
+            print(f"Image processing error: {e}")
+            return jsonify({"error": "Invalid or corrupted image file. Please upload a valid JPG or PNG image."}), 400
+
+        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
 
         # --- TFLite Inference ---
         input_details = model.get_input_details()
@@ -190,7 +208,7 @@ def predict():
         print(f"ERROR during prediction: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({"error": f"Error during prediction: {e}"}), 500
+        return jsonify({"error": f"Server error during prediction: {str(e)}"}), 500
 
 # --- Get Diagnosis Endpoint ---
 @app.route('/get_diagnosis', methods=['POST'])
