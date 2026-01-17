@@ -82,7 +82,9 @@
         <a href="/history_page" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200">History</a>
         <a href="/user_guide" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200">User Guide</a>
         <a href="/tools" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200">Tools</a>
-        <a href="#" class="bg-red-500 nav-link text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors duration-200 font-semibold shadow-md">
+        <a href="#" 
+        id="emergencyBtn"
+         class="bg-red-500 nav-link text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors duration-200 font-semibold shadow-md">
           <i class="fas fa-phone-alt mr-1"></i> Emergency
         </a>
       </div>
@@ -101,13 +103,93 @@
       <a href="/history_page" target="_blank" class="block text-white font-medium hover:text-green-200">History</a>
       <a href="/user_guide" target="_blank" class="block text-white font-medium hover:text-green-200">User Guide</a>
       <a href="/tools" target="_blank" class="block text-white font-medium hover:text-green-200">Tools</a>
-      <a href="#" class="block bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 font-semibold text-center">
+      <a href="#" id="emergencyBtnMobile"
+       class="block bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 font-semibold text-center">
         <i class="fas fa-phone-alt mr-1"></i> Emergency
       </a>
     </div>
   </nav>
 
-  
+  <!-- Emergency Support Modal -->
+<div id="emergencyModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50">
+  <div class="bg-white rounded-lg p-6 w-96 mx-auto mt-24 shadow-lg">
+    <h2 class="text-xl font-bold text-red-600 mb-4">🚨 Emergency Support</h2>
+
+    <form id="emergencyForm">
+      <label class="block mb-2 font-medium">Name *</label>
+      <input type="text" required class="w-full border px-3 py-2 rounded mb-3">
+
+      <label class="block mb-2 font-medium">Describe your issue *</label>
+      <textarea required class="w-full border px-3 py-2 rounded mb-3"></textarea>
+
+      <label class="block mb-2 font-medium">
+        Upload image (optional, max 2 MB)
+      </label>
+      <input type="file" id="userImage" accept="image/*" class="w-full mb-3">
+
+      <div class="flex justify-end gap-2">
+        <button type="button" id="closeEmergency"
+          class="px-4 py-2 bg-gray-400 text-white rounded">
+          Cancel
+        </button>
+        <button type="submit"
+          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+          Submit
+        </button>
+      </div>
+    </form>
+
+    <p id="emergencySuccess" class="hidden text-green-600 font-medium mt-4">
+      ✅ Thanks for submitting your issue.  
+      Our team will approach you within 24–48 hours.
+    </p>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const emergencyBtn = document.getElementById('emergencyBtn');
+    const emergencyBtnMobile = document.getElementById('emergencyBtnMobile');
+    const emergencyModal = document.getElementById('emergencyModal');
+    const closeEmergency = document.getElementById('closeEmergency');
+    const emergencyForm = document.getElementById('emergencyForm');
+    const emergencySuccess = document.getElementById('emergencySuccess');
+    const userImage = document.getElementById('userImage');
+
+    function openEmergencyModal(e) {
+      e.preventDefault();
+      emergencyModal.classList.remove('hidden');
+    }
+
+    emergencyBtn?.addEventListener('click', openEmergencyModal);
+    emergencyBtnMobile?.addEventListener('click', openEmergencyModal);
+
+    closeEmergency.addEventListener('click', () => {
+      emergencyModal.classList.add('hidden');
+      emergencyForm.reset();
+      emergencySuccess.classList.add('hidden');
+    });
+
+    emergencyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (userImage.files.length > 0) {
+        const fileSizeMB = userImage.files[0].size / 1024 / 1024;
+        if (fileSizeMB > 2) {
+          alert('Image size must be less than 2 MB');
+          return;
+        }
+      }
+
+      emergencySuccess.classList.remove('hidden');
+      emergencyForm.reset();
+
+      console.log('Emergency form submitted (frontend only)');
+    });
+
+  });
+</script>
+
   
 
   <!-- JS: Toggle mobile menu -->
