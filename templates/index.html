@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Marked.js for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- i18n Module -->
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
     <style>
     @keyframes pulse-glow {
       0% { box-shadow: 0 0 0px #4ade80; }
@@ -46,14 +48,14 @@
 <body class="bg-gradient-to-br from-green-100 to-blue-100 min-h-screen flex flex-col font-inter">
 <!-- Frame 1 -->
 <div id="frame1" class="fixed inset-0 flex flex-col items-center justify-center bg-green-200 text-center text-3xl font-bold z-50">
-  <h1>🌿 Welcome to Crop Cure!</h1>
-  <p class="text-xl mt-2 italic text-green-800">"A healthy crop is a healthy future."</p>
+  <h1 data-i18n="welcome_to_crop_cure">Welcome to Crop Cure!</h1>
+  <p class="text-xl mt-2 italic text-green-800" data-i18n="healthy_crop_healthy_future">A healthy crop is a healthy future.</p>
 </div>
 
 <!-- Frame 2 -->
 <div id="frame2" class="fixed inset-0 hidden flex flex-col items-center justify-center bg-green-100 text-center text-3xl font-bold z-40">
-  <h1>🌱 AI Crop Doctor</h1>
-  <p class="text-xl mt-2 italic text-green-700">"Detect early, protect fully."</p>
+  <h1 data-i18n="ai_crop_doctor">AI Crop Doctor</h1>
+  <p class="text-xl mt-2 italic text-green-700" data-i18n="detect_early_protect_fully">Detect early, protect fully.</p>
 </div>
 
 <!-- Main Content Wrapper -->
@@ -72,23 +74,23 @@
     alt="AI Crop Doctor Logo"
     class="w-10 h-10 rounded-full shadow-lg border-2 border-white hover:scale-105 transition-transform duration-300"
   />
-  <span class="tracking-wide hover:tracking-widest transition-all duration-300">AI Crop Doctor</span>
+  <span class="tracking-wide hover:tracking-widest transition-all duration-300" data-i18n="ai_crop_doctor">AI Crop Doctor</span>
 </a>
 
 
       <!-- 📂 Navigation Links -->
-      <div class="space-x-4 hidden md:flex">
-        <a href="/" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200">Home</a>
-        <a href="/history_page" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200">History</a>
-        <a href="/user_guide" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200">User Guide</a>
-        <a href="/tools" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200">Tools</a>
-        <a href="#" class="bg-red-500 nav-link text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors duration-200 font-semibold shadow-md">
+      <div class="space-x-4 hidden md:flex items-center">
+        <a href="/" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200" data-i18n="home">Home</a>
+        <a href="/history_page" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200" data-i18n="history">History</a>
+        <a href="/user_guide" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200" data-i18n="user_guide">User Guide</a>
+        <a href="/tools" target="_blank" class="text-white nav-link font-medium hover:text-green-200 transition-all duration-200" data-i18n="tools">Tools</a>
+        <a href="#" class="bg-red-500 nav-link text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors duration-200 font-semibold shadow-md" data-i18n="emergency">
           <i class="fas fa-phone-alt mr-1"></i> Emergency
         </a>
       </div>
       
       <!-- 📱 Mobile Menu Button -->
-      <div class="md:hidden">
+      <div class="md:hidden flex items-center gap-4">
         <button id="menuToggle" class="text-white text-2xl focus:outline-none">
           <i class="fas fa-bars"></i>
         </button>
@@ -97,11 +99,11 @@
 
     <!-- 📱 Mobile Dropdown -->
     <div id="mobileMenu" class="md:hidden mt-2 space-y-2 px-4 hidden">
-      <a href="/" class="block text-white font-medium hover:text-green-200">Home</a>
-      <a href="/history_page" target="_blank" class="block text-white font-medium hover:text-green-200">History</a>
-      <a href="/user_guide" target="_blank" class="block text-white font-medium hover:text-green-200">User Guide</a>
-      <a href="/tools" target="_blank" class="block text-white font-medium hover:text-green-200">Tools</a>
-      <a href="#" class="block bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 font-semibold text-center">
+      <a href="/" class="block text-white font-medium hover:text-green-200" data-i18n="home">Home</a>
+      <a href="/history_page" target="_blank" class="block text-white font-medium hover:text-green-200" data-i18n="history">History</a>
+      <a href="/user_guide" target="_blank" class="block text-white font-medium hover:text-green-200" data-i18n="user_guide">User Guide</a>
+      <a href="/tools" target="_blank" class="block text-white font-medium hover:text-green-200" data-i18n="tools">Tools</a>
+      <a href="#" class="block bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 font-semibold text-center" data-i18n="emergency">
         <i class="fas fa-phone-alt mr-1"></i> Emergency
       </a>
     </div>
@@ -139,7 +141,7 @@
   <div class="max-w-xl mx-auto mt-10 p-6 bg-green-100 border-4 border-green-800 rounded-xl shadow-lg transform transition duration-500 hover:scale-105">
   <div class="overflow-hidden whitespace-nowrap">
   <h2 class="text-4xl font-extrabold text-green-800 inline-block ">
-    Welcome to <span class="text-green-900 underline">AI Crop Doctor</span>
+    <span data-i18n="welcome_to_ai_crop_doctor">Welcome to AI Crop Doctor</span>
   </h2>
 </div>
 
@@ -148,20 +150,19 @@
 
   <div class="max-w-2xl mx-auto mt-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
   <p class="text-gray-800 text-lg leading-relaxed tracking-wide">
-    Diagnose <span class="font-semibold text-green-600">plant diseases</span> instantly with smart <span class="font-semibold text-gray-900">AI</span> — just upload a photo and let technology assist your next step.
+    <span data-i18n="diagnose_plants">Diagnose plant diseases instantly with smart AI — just upload a photo and let technology assist your next step.</span>
   </p>
 </div>
 
 
   <p class="text-gray-900 text-base italic leading-relaxed">
-  Powered by <span class="font-bold text-gray-900">Machine learning</span> and 
-  <span class="font-bold text-gray-900">Generative AI</span>
+  <span data-i18n="powered_by">Powered by Machine learning and Generative AI</span>
 </p>
 
 
 </div>
             <div id="upload-section" class="max-w-xl mx-auto mb-10 p-6 bg-white border border-gray-200 rounded-2xl shadow-md">
-  <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center" data-i18n="upload_plant_image">
     Upload Plant Image
   </h2>
 
@@ -169,7 +170,7 @@
     <svg class="w-10 h-10 text-green-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 25a4 4 0 01-.88-7.903A5 5 0 0115.9 6L25 6a5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
     </svg>
-    <p class="text-gray-600 text-center text-base">
+    <p class="text-gray-600 text-center text-base" data-i18n="drag_drop">
       Drag & Drop your image here, or 
       <span class="text-green-600 font-semibold underline">click to browse</span>
     </p>
@@ -182,7 +183,7 @@
   </div>
 
   <div class="flex justify-center">
-    <button id="predict-button" class="bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition duration-300 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-md">
+    <button id="predict-button" class="bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition duration-300 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-md" data-i18n="analyze_image">
       Analyze Image
     </button>
   </div>
@@ -190,7 +191,7 @@
 
                 
                 
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Try with Sample Images:</h3>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4" data-i18n="try_sample_images">Try with Sample Images:</h3>
                 <!--  grid for rows with 5 images each -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     <div class="sample-image-card bg-gray-50 p-1 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition-colors" data-image-path="{{ url_for('static', filename='images/apple_black-rot.JPG') }}" data-image-name="0001.JPG">
