@@ -621,13 +621,17 @@
 
                 <!-- Loading Indicator for detailed report generation -->
                 <div id="loading-spinner-report" class="hidden flex flex-col items-center justify-center mb-8">
-                    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24 mb-4"></div>
-                    <p class="text-gray-700 text-lg font-medium text-center">
-                        <span id="loading-text-report">Generating your personalized report...</span>
-                        <br>
-                        <span class="text-sm text-gray-500">This might take a moment as our AI Agronomist compiles the best advice for you.</span>
-                    </p>
-                </div>
+    <div class="relative w-24 h-24 mb-6">
+        <div class="absolute inset-0 border-4 border-green-100 rounded-full"></div>
+        <div class="loader-ring absolute inset-0 border-4 border-t-green-500 border-l-green-500 rounded-full"></div>
+    </div>
+
+    <p class="text-gray-700 text-lg font-medium text-center">
+        <span id="loading-text-report">Generating your personalized report...</span>
+        <br>
+        <span class="text-sm text-gray-500">This might take a moment as our AI Agronomist compiles the best advice for you.</span>
+    </p>
+</div>
 
                 <!-- AI Agronomist Report Section - now separate and hidden by default -->
                 <div id="report-section-standalone" class="hidden text-left mb-8">
