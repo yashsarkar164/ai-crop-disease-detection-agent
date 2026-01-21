@@ -611,3 +611,15 @@ a:hover::after {
     transform: none;
   }
 }
+
+/* Animation for the new loader-ring class */
+.loader-ring {
+  border-top-color: var(--accent) !important;
+  border-left-color: var(--accent) !important;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
